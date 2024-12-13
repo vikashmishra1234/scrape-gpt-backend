@@ -7,7 +7,21 @@ const ScrapeChats = async (req, res) => {
       return res.status(400).json({ error: 'Chat URL is required.' });
     }
 
-    const browser = await puppeteer.launch();
+    // Launch Puppeteer with Render-specific settings
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-gpu',
+      ],
+    });
+
     const page = await browser.newPage();
 
     await page.goto(chatUrl, { waitUntil: 'networkidle2' });
@@ -29,7 +43,8 @@ const ScrapeChats = async (req, res) => {
     if (!messages) {
       return res.status(400).json({ error: 'Failed to extract chat messages.' });
     }
-    // Save messages to a PDF (or handle as needed)
+
+    // Save messages to a PDF
     const fs = require('fs');
     const PDFDocument = require('pdfkit');
     const path = require('path');
@@ -54,4 +69,3 @@ const ScrapeChats = async (req, res) => {
 };
 
 module.exports = ScrapeChats;
-
