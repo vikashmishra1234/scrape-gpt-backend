@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 const ScrapeChats = async (req, res) => {
   try {
@@ -7,9 +7,9 @@ const ScrapeChats = async (req, res) => {
       return res.status(400).json({ error: 'Chat URL is required.' });
     }
 
-    // Launch Puppeteer with Render-specific settings
-    const browser = await puppeteer.launch({
-      headless: true,
+    // Launch Playwright
+    const browser = await chromium.launch({
+      headless: true, // Run in headless mode
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -22,11 +22,13 @@ const ScrapeChats = async (req, res) => {
       ],
     });
 
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    const page = await context.newPage();
 
-    await page.goto(chatUrl, { waitUntil: 'networkidle2' });
+    // Navigate to the URL
+    await page.goto(chatUrl, { waitUntil: 'networkidle' });
 
-    // Wait for the chat container to appear
+    // Wait for dynamic content to load
     const chatSelector = 'div[class*="conversation-turn"]';
     await page.waitForSelector(chatSelector, { timeout: 60000 });
 
@@ -44,7 +46,7 @@ const ScrapeChats = async (req, res) => {
       return res.status(400).json({ error: 'Failed to extract chat messages.' });
     }
 
-    // Save messages to a PDF
+    // Generate PDF (unchanged from your Puppeteer code)
     const fs = require('fs');
     const PDFDocument = require('pdfkit');
     const path = require('path');

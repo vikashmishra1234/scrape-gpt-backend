@@ -1,5 +1,4 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const Router = require("./routes/routes");
@@ -20,7 +19,7 @@ app.use(
 );
 // Serve static files (like PDFs) from the 'public' directory
 app.use('/chats', express.static(path.join(__dirname, 'chats')));
-app.use(cookieParser());
+
 app.use(express.json());
 app.use('/',Router)
 
