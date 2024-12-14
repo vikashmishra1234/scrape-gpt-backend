@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "npx playwright install chromium",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,6 +14,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pdfkit": "^0.15.1"
+    "pdfkit": "^0.15.1",
+    "playwright-aws-lambda": "^0.11.0"
   }
 }

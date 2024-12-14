@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+const chromium = require('playwright-aws-lambda');
 
 const ScrapeChats = async (req, res) => {
   try {
@@ -8,19 +8,12 @@ const ScrapeChats = async (req, res) => {
     }
 
     // Launch Playwright
-    const browser = await chromium.launch({
-      headless: true, // Run in headless mode
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu',
-      ],
+
+    const browser = await chromium.puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+    
 
     const context = await browser.newContext();
     const page = await context.newPage();
