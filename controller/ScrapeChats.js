@@ -7,7 +7,16 @@ const ScrapeChats = async (req, res) => {
       return res.status(400).json({ error: 'Chat URL is required.' });
     }
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args:[
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote"
+      ],
+      executablePath:process.env.NODE_ENV==="production"?
+      process.env.PUPPETEER_EXECUTATBLE_PATH: puppeteer.executablePath()
+    });
     const page = await browser.newPage();
 
     await page.goto(chatUrl, { waitUntil: 'networkidle2' });
