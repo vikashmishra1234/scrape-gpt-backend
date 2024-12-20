@@ -1,9 +1,11 @@
 const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv')
+dotenv.config()
 
 cloudinary.config({ 
-    cloud_name: 'dyejp2g4b', 
-    api_key: '762179297276874', 
-    api_secret: 'jL6A7B2Y40R8bGrojpWyGzCOeXI'
+    cloud_name: process.env.CLOUDINARY_CLOUD, 
+    api_key: process.env.CLOUDINARY_API, 
+    api_secret: process.env.CLOUDINARY_SECRET
 });
 
 const UploadToCloudinary = async (fileBuffer) => {
