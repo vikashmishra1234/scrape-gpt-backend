@@ -12,11 +12,16 @@ const PORT =process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin:["https://scrape-gpt.vercel.app","http://localhost:5173"],
     methods: ["POST", "GET"],
-    credentials: true,
+    credentials: true
   })
 );
+// {
+//   origin: ["http://localhost:5173"],
+//   methods: ["POST", "GET"],
+//   credentials: true,
+// }
 // Serve static files (like PDFs) from the 'public' directory
 app.use('/chats', express.static(path.join(__dirname, 'chats')));
 

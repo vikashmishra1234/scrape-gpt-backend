@@ -1,8 +1,7 @@
 const puppeteer = require('puppeteer');
 const PDFDocument = require('pdfkit');
 const UploadToCloudinary = require('./UploadToCloudinary'); // Import the upload function
-const fs = require('fs');
-const path = require('path');
+const streamBuffers = require('stream-buffers');
 
 const ScrapeChats = async (req, res) => {
   try {
@@ -50,12 +49,11 @@ const ScrapeChats = async (req, res) => {
       return res.status(400).json({ error: 'No messages found for either role.' });
     }
 
-    // Generate the PDF file
-    const tempFilePath = path.join('/tmp', `chat-${Date.now()}.pdf`);
+    // Generate the PDF in memory
     const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(tempFilePath);
+    const bufferStream = new streamBuffers.WritableStreamBuffer();
 
-    doc.pipe(writeStream);
+    doc.pipe(bufferStream);
 
     // Add content to PDF
     doc.fontSize(16).fillColor('blue').text('Chat Conversation', { align: 'center' });
@@ -75,19 +73,21 @@ const ScrapeChats = async (req, res) => {
 
     doc.end();
 
-    // Wait for the file to be written
-    writeStream.on('finish', async () => {
+    // Wait for the PDF generation to complete
+    bufferStream.on('finish', async () => {
       try {
-        // Upload the generated PDF to Cloudinary
-        const uploadResult = await UploadToCloudinary(tempFilePath);
+        const pdfBuffer = bufferStream.getContents();
+        if (!pdfBuffer) {
+          throw new Error('Failed to generate PDF buffer.');
+        }
 
-        // Delete the temporary file
-        fs.unlinkSync(tempFilePath);
+        // Upload the PDF buffer to Cloudinary
+        const uploadResult = await UploadToCloudinary(pdfBuffer, { resource_type: 'raw' });
 
         // Respond with the Cloudinary URL
         res.status(200).json({
-          message: 'PDF uploaded successfully',
-          url: uploadResult,
+          message: 'PDF Created Successfully !',
+          data: uploadResult,
         });
       } catch (uploadError) {
         console.error('Error uploading PDF to Cloudinary:', uploadError);
