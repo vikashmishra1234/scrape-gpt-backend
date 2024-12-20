@@ -51,7 +51,7 @@ const ScrapeChats = async (req, res) => {
     }
 
     // Generate the PDF file
-    const tempFilePath = path.join(__dirname, `../public/chat-${Date.now()}.pdf`);
+    const tempFilePath = path.join('/tmp', `chat-${Date.now()}.pdf`);
     const doc = new PDFDocument();
     const writeStream = fs.createWriteStream(tempFilePath);
 
